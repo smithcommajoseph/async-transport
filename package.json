@@ -10,8 +10,11 @@
     "type": "git",
     "url": "git+https://github.com/technicolorenvy/async-transport.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Joseph (Jos) Smith",
+    "email": "technicolorenvy@gmail.com"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/technicolorenvy/async-transport/issues"
   },
