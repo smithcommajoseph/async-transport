@@ -59,16 +59,12 @@ let asyncThing2 = () => {
 
 // Working with promises via async/await
 let foo = async () => {
-    let theData = await asyncTransport([
-        asyncThing1,
-        asyncThing2
-      ]
-    );    
+    let theData = await asyncTransport([ asyncThing1, asyncThing2 ]);    
     console.log(theData);
 }
 foo();
 
-// Above code logs the follwing object to the console
+// Above code logs the following object to the console
 {
   hasErrors: false,
   errors: [ null, null ],
@@ -80,7 +76,7 @@ foo();
 
 ## License
 
-MIT © Joseph Smith
+MIT © Joseph (Jos) Smith
 
 [npm-url]: https://npmjs.org/package/async-transport
 [npm-image]: https://img.shields.io/npm/v/async-transport.svg?style=flat-square
