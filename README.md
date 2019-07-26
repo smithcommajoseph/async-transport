@@ -1,4 +1,7 @@
-# Async Transport [![Build Status](https://secure.travis-ci.org/technicolorenvy/async-transport.png?branch=master)](http://travis-ci.org/technicolorenvy/async-transport)
+# Async Transport 
+
+[![NPM version][npm-image]][npm-url]
+[![Travis Build][travis-image]][travis-url]
 
 AsyncTransport is a wrapper for the most excellent [await-to-js](https://github.com/scopsy/await-to-js) function. It provides support for 1 to n asyncronous functions, which may be executed in serial or parallel, and returns a predictable object for easy consumption.
 
@@ -78,3 +81,9 @@ foo();
 ## License
 
 MIT © Joseph Smith
+
+[npm-url]: https://npmjs.org/package/async-transport
+[npm-image]: https://img.shields.io/npm/v/async-transport.svg?style=flat-square
+
+[travis-url]: https://travis-ci.org/technicolorenvy/async-transport
+[travis-image]: https://img.shields.io/travis/technicolorenvy/async-transport.svg?style=flat-square
