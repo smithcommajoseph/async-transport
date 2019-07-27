@@ -122,7 +122,7 @@ describe('AsyncTransport', () => {
     expect(theData.data[2]).to.be.undefined;
   });
 
-  it('works with multiple seriel fns whose Promises all resolve', async () => {
+  it('works with multiple serial fns whose Promises all resolve', async () => {
     let theData = await asyncTransport([
         asyncThing3,
         asyncThing4,
