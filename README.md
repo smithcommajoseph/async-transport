@@ -8,7 +8,7 @@ AsyncTransport is a wrapper for the most excellent [await-to-js](https://github.
 ## Contents
 - [Pre-requisites](https://github.com/technicolorenvy/async-transport#pre-requisites)
 - [Install](https://github.com/technicolorenvy/async-transport#install)
-- [Why use asyncTransport?](https://github.com/technicolorenvy/async-transport#why-use-asynctransport?)
+- [Why use asyncTransport?](https://github.com/technicolorenvy/async-transport#why-use-asynctransport)
 - [Details](https://github.com/technicolorenvy/async-transport#details)
 - [Usage Examples](https://github.com/technicolorenvy/async-transport#usage-examples)
 - [License](https://github.com/technicolorenvy/async-transport#license)
