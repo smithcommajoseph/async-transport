@@ -3,7 +3,15 @@
 [![NPM version][npm-image]][npm-url]
 [![Travis Build][travis-image]][travis-url]
 
-AsyncTransport is a wrapper for the most excellent [await-to-js](https://github.com/scopsy/await-to-js) function. It provides support for 1 to n asynchronus functions, which may be executed in serial or parallel, and returns a predictable object for easy consumption.
+AsyncTransport is a wrapper for the most excellent [await-to-js](https://github.com/scopsy/await-to-js) function. It provides support for 1 - n asynchronus functions, which may be executed in serial or parallel, and returns a predictable object for easy consumption.
+
+## Contents
+- [Pre-requisites](https://github.com/technicolorenvy/async-transport#pre-requisites)
+- [Install](https://github.com/technicolorenvy/async-transport#install)
+- [Why use asyncTransport?](https://github.com/technicolorenvy/async-transport#why-use-asynctransport?)
+- [Details](https://github.com/technicolorenvy/async-transport#details)
+- [Usage Examples](https://github.com/technicolorenvy/async-transport#usage-examples)
+- [License](https://github.com/technicolorenvy/async-transport#license)
 
 ## Pre-requisites
 You need to use Node 7.6 (or later) or an ES7 transpiler in order to use async/await functionality. You can use babel or typescript for that.
@@ -20,6 +28,97 @@ or using yarn
 yarn add async-transport
 ```
 
+## Why use asyncTransport?
+ES7 async/await allows us to write asynchronus code in a style that _looks_ synchronus. This is great, but under the hood it is crucial to remember that we are still effectively dealing with [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). When implementing error handling inside Promises developers commonly use a try/catch approach like the following. 
+
+```javascript
+async function asyncTask(cb) {
+  try {
+    const user = await UserModel.findById(1);
+    if(!user) return cb('No user found');
+  } catch(e) {
+    return cb('Unexpected error occurred');
+  }
+
+  try {
+    const savedTask = await TaskModel({userId: user.id, name: 'Demo Task'});
+  } catch(e) {
+    return cb('Error occurred while saving task');
+  }
+
+  if(user.notificationsEnabled) {
+    try {
+      await NotificationService.sendNotification(user.id, 'Task Created');  
+    } catch(e) {
+      return cb('Error while sending notification');
+    }
+  }
+
+  if(savedTask.assignedUser.id !== user.id) {
+    try {
+      await NotificationService.sendNotification(savedTask.assignedUser.id, 'Task was created for you');
+    } catch(e) {
+      return cb('Error while sending notification');
+    }
+  }
+
+  cb(null, savedTask);
+}
+```
+
+This becomes onerous, for example, when writing API endpoints that assemble data from multiple sources and may quickly become hard to read (and maintain). When researching ways to remedy this, I found [this Medium blog entry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) written by Dima Grossman and begain using the resulting [await-to-js](https://github.com/scopsy/await-to-js) package. This yielded code like so.
+
+```javascript
+import to from 'await-to-js';
+
+async function asyncTask() {
+  let err, user, savedTask;
+
+  [err, user] = await to(UserModel.findById(1));
+  if(!user) throw new CustomerError('No user found');
+
+  [err, savedTask] = await to(TaskModel({userId: user.id, name: 'Demo Task'}));
+  if(err) throw new CustomError('Error occurred while saving task');
+
+  if(user.notificationsEnabled) {
+    const [err] = await to(NotificationService.sendNotification(user.id, 'Task Created'));  
+    if (err) console.error('Just log the error and continue flow');
+  }
+}
+```
+
+This was an improvement, but still did not fully meet my needs. In more complex use-cases, one still needed to manage and track multiple arrays as a result of wrapping async code in `to` method calls. 
+
+What if we could utilize a single method to handle the execution of 1-n async functions, using `to` behind the scenes to keep things cleanly organized `asyncTransport` was my answer to this question.
+
+Utilizing `asyncTransport`, the above code may be further simplified like so.
+
+```javascript
+import asyncTransport from 'async-transport';
+
+async function asyncTask() {
+  let result = await asyncTransport([ 
+    UserModel.findById(1),
+    TaskModel({userId: user.id, name: 'Demo Task'}),
+    NotificationService.sendNotification(user.id, 'Task Created')
+  ]);    
+
+  // Print (or throw) errors by iterating over the errors collection
+  if (result.hasErrors) {
+    for (let i = 0; i < result.errors.length; i++) {
+      if (result.errors[i]) { console.log(result.errors[i]); }
+    }
+  // Otherwise do stuff with the result data
+  } else {
+    console.log(result.data);
+  }
+}
+```
+
+Usint this approach we only have to track one variable, `result`, which will reliably contain 3 properties, `hasErrors`, `errors`, and `data`. 
+
+`errors` and `data` are parallel arrays, both of which maintain the order of the functions provided. In other words, executing `asyncTransport([fn1, fn2, fn3])` will return an object whose `errors` contain `[errors-from-fn1, errors-from-fn2, errors-from-fn3]` as well as a `data` array that contains `[data-from-fn1, data-from-fn2, data-from-fn3]`.
+
 ## Details 
 
 The `asyncTransport` function takes two arguments
@@ -32,7 +131,7 @@ Once all functions in the `promiseCollection` have either resolved or errored (o
 - `errors` - an array of errors organized in order in which the related functions were passed
 - `data` - an array of data objects organized in order in which the related functions to were passed
 
-## Usage 
+## Usage Examples
 
 ### Basic (aww snap, you basic!)
 
