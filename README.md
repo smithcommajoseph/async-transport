@@ -3,7 +3,7 @@
 [![NPM version][npm-image]][npm-url]
 [![Travis Build][travis-image]][travis-url]
 
-AsyncTransport is a wrapper for the most excellent [await-to-js](https://github.com/scopsy/await-to-js) function. It provides support for 1 - n asynchronus functions, which may be executed in serial or parallel, and returns a predictable object for easy consumption.
+AsyncTransport is a wrapper for the most excellent [await-to-js](https://github.com/scopsy/await-to-js) function. It provides support for 1 - n asynchronous functions, which may be executed in serial or parallel, and returns a predictable object for easy consumption.
 
 ## Contents
 - [Pre-requisites](https://github.com/technicolorenvy/async-transport#pre-requisites)
@@ -14,7 +14,7 @@ AsyncTransport is a wrapper for the most excellent [await-to-js](https://github.
 - [License](https://github.com/technicolorenvy/async-transport#license)
 
 ## Pre-requisites
-You need to use Node 7.6 (or later) or an ES7 transpiler in order to use async/await functionality. You can use babel or typescript for that.
+You need to use Node 7.6 (or later) or an ES7 transpiler to use async/await functionality. You can use babel or typescript for that.
 
 ## Install
 
@@ -29,7 +29,7 @@ yarn add async-transport
 ```
 
 ## Why use asyncTransport?
-ES7 async/await allows us to write asynchronus code in a style that _looks_ synchronus. This is great, but under the hood it is crucial to remember that we are still effectively dealing with [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). When implementing error handling inside Promises developers commonly use a try/catch approach like the following. 
+ES7 async/await allows us to write asynchronous code in a style that _looks_ synchronous. This is great, but under the hood, it is crucial to remember that we are still effectively dealing with [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). When implementing error handling inside Promises developers commonly use a try/catch approach like the following. 
 
 ```javascript
 async function asyncTask(cb) {
@@ -66,7 +66,7 @@ async function asyncTask(cb) {
 }
 ```
 
-This becomes onerous, for example, when writing API endpoints that assemble data from multiple sources and may quickly become hard to read (and maintain). When researching ways to remedy this, I found [this Medium blog entry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) written by Dima Grossman and begain using the resulting [await-to-js](https://github.com/scopsy/await-to-js) package. This yielded code like so.
+This becomes onerous, for example, when writing API endpoints that assemble data from multiple sources and may quickly become hard to read (and maintain). When researching ways to remedy this, I found [this Medium blog entry](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) written by Dima Grossman and began using the resulting [await-to-js](https://github.com/scopsy/await-to-js) package. This yielded code like so.
 
 ```javascript
 import to from 'await-to-js';
@@ -115,7 +115,7 @@ async function asyncTask() {
 }
 ```
 
-Usint this approach we only have to track one variable, `result`, which will reliably contain 3 properties, `hasErrors`, `errors`, and `data`. 
+Using this approach, we only have to track one variable, `result`, which will reliably contain three properties, `hasErrors`, `errors`, and `data`. 
 
 `errors` and `data` are parallel arrays, both of which maintain the order of the functions provided. In other words, executing `asyncTransport([fn1, fn2, fn3])` will return an object whose `errors` contain `[errors-from-fn1, errors-from-fn2, errors-from-fn3]` as well as a `data` array that contains `[data-from-fn1, data-from-fn2, data-from-fn3]`.
 
@@ -128,8 +128,8 @@ The `asyncTransport` function takes two arguments
 Once all functions in the `promiseCollection` have either resolved or errored (or some combination of the two), an object is returned containing 3 props. These props are
 
 - `hasErrors` - `true` if errors were detected, `false` otherwise
-- `errors` - an array of errors organized in order in which the related functions were passed
-- `data` - an array of data objects organized in order in which the related functions to were passed
+- `errors` - an array of errors organized in the order in which the related functions were passed
+- `data` - an array of data objects organized in the order in which the related functions to were passed
 
 ## Usage Examples
 
