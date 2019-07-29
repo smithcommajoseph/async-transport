@@ -3,7 +3,8 @@
 [![NPM version][npm-image]][npm-url]
 [![Travis Build][travis-image]][travis-url]
 
-AsyncTransport is a wrapper for the most excellent [await-to-js](https://github.com/scopsy/await-to-js) function. It provides support for 1 - n asynchronous functions, which may be executed in serial or parallel, and returns a predictable object for easy consumption.
+## Introduction 
+Provides support for 1 - n asynchronous functions, which may be executed in serial or parallel, and returns a predictable object for easy consumption.
 
 ## Contents
 - [Pre-requisites](https://github.com/technicolorenvy/async-transport#pre-requisites)
