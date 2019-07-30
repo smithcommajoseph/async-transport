@@ -300,12 +300,12 @@ let foo = async () => {
 
 foo();
 
-// Above code still logs the following object to the console
-  {
-    hasErrors: false,
-    errors: [ null, null ],
-    data: [ { val: 4 }, { val: 8 } ]
-  }
+// Above code logs the following object to the console
+{
+  hasErrors: false,
+  errors: [ null, null ],
+  data: [ { val: 4 }, { val: 8 } ]
+}
 ```
 
 Given the above, _ideally_ one should add safeguards - like checking that `args` and any keys you plan on using in your fn actually exist - but as written, it should be adequate to illustrate the process.
