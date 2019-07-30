@@ -3,7 +3,7 @@
 [![NPM version][npm-image]][npm-url]
 [![Travis Build][travis-image]][travis-url]
 
-> Provides support for 1 - n asynchronous functions, which may be executed in serial or parallel, and returns a predictable object for easy consumption.
+> Provides support for 1-n asynchronous, returning a predictable object for easy consumption.
 
 ## Contents
 - [Pre-requisites](https://github.com/technicolorenvy/async-transport#pre-requisites)
@@ -132,13 +132,16 @@ Once all functions in the `promiseCollection` have either resolved or errored (o
 - `data` - an array of data objects organized in the order in which the related functions to were passed
 
 ## Usage Examples
+While these examples are clearly trivial and fabricated, they should clearly demonstrate how `asyncTransport` may be integrated into your work-flow.
 
-### Basic (aww snap, you basic!)
+### Basic Examples
+
+If you are concerned with only one async fn, you could write something like the following.
 
 ```javascript
 const asyncTransport = require('async-transport');
 
-// mock async fns
+// One mock async fn
 let asyncThing1 = () => {
    let deferred = new Promise((resolve, reject) => {
      setTimeout(() => {
@@ -147,6 +150,38 @@ let asyncThing1 = () => {
    });
    return deferred;
 }
+
+// Working with promises via async/await
+let foo = async () => {
+  let theData = await asyncTransport(asyncThing1);    
+  console.log(theData);
+}
+
+foo();
+
+// The above code logs the following object to the console
+{
+  hasErrors: false,
+  errors: [ null ],
+  data: [ { foo: 'bar' } ]
+}
+```
+
+If you have multiple async fns simply pass an array to `asyncTransport` like so.
+
+```javascript
+const asyncTransport = require('async-transport');
+
+// Two mock async fns
+let asyncThing1 = () => {
+   let deferred = new Promise((resolve, reject) => {
+     setTimeout(() => {
+      resolve({ foo: 'bar' });
+     }, 100)
+   });
+   return deferred;
+}
+
 let asyncThing2 = () => {
    let deferred = new Promise((resolve, reject) => {
      setTimeout(() => {
@@ -161,6 +196,7 @@ let foo = async () => {
     let theData = await asyncTransport([ asyncThing1, asyncThing2 ]);    
     console.log(theData);
 }
+
 foo();
 
 // Above code logs the following object to the console
@@ -171,7 +207,106 @@ foo();
 }
 ```
 
-### Other usage examples coming soon! In the meantime, please see the [tests](https://github.com/technicolorenvy/async-transport/blob/master/__tests__/async-transport.test.js) for more interesting use-cases and examples.
+## Serial Execution Examples
+
+By default, `asyncTransport` will execute async fns passed to it (nearly) simultaneously and items will resolve in whatever order they resolve. 
+
+If each function relies on the previous fn to have successfully resolved, you can pass a second parameter to `asyncTransport` to enforce serial execution of async functions. Let's modify our example above to see how we do this.
+
+```javascript
+const asyncTransport = require('async-transport');
+
+let asyncThing1 = () => {
+   let deferred = new Promise((resolve, reject) => {
+     setTimeout(() => {
+      resolve({ foo: 'bar' });
+     }, 100)
+   });
+   return deferred;
+}
+
+let asyncThing2 = () => {
+   let deferred = new Promise((resolve, reject) => {
+     setTimeout(() => {
+      resolve({ baz: 'boom' });
+     }, 50)
+   });
+   return deferred;
+}
+
+let foo = async () => {
+  let theData = await asyncTransport([ 
+      asyncThing1, 
+      asyncThing2
+    ],
+    {strategy: 'serial'} // Ensures fns resolve in the order they are passed
+  );    
+  console.log(theData);
+}
+
+foo();
+
+// Above code still logs the following object to the console, but
+// output in this case is identical to the `parallel` strategy
+{
+  hasErrors: false,
+  errors: [ null, null ],
+  data: [ { foo: 'bar' }, { baz: 'boom' } ]
+}
+```
+
+## Data Dependent Serial Execution Examples
+
+In addition to guaranteed order of execution, `asyncTransport` also provides a way to pass results from prior async function calls to subsequent functions as arguments. Consider the following.
+
+```javascript
+const asyncTransport = require('async-transport');
+
+let asyncThing3 = () => {
+  let deferred = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({
+        val: 4
+      });
+     }, 75)
+   });
+   return deferred;
+}
+
+// args parameter is the data object returned from the prior async fn
+let asyncThing4 = (args) => {
+   let deferred = new Promise((resolve, reject) => {
+     setTimeout(() => {
+      resolve({
+        val: args.val * 2 // multiply 4 * 2 (see execution below)
+      });
+     }, 20)
+   });
+   return deferred;
+}
+
+let foo = async () => {
+  let theData = await asyncTransport([
+      asyncThing3,
+      asyncThing4
+    ],
+    {strategy: 'serial'}
+  );
+  console.log(theData);
+}
+
+foo();
+
+// Above code still logs the following object to the console
+  {
+    hasErrors: false,
+    errors: [ null, null ],
+    data: [ { val: 4 }, { val: 8 } ]
+  }
+```
+
+Given the above, _ideally_ one should add safeguards - like checking that `args` and any keys you plan on using in your fn actually exist - but as written, it should be adequate to illustrate the process.
+
 
 ## License
 
