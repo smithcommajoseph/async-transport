@@ -11,6 +11,9 @@
 - [Why use asyncTransport?](https://github.com/technicolorenvy/async-transport#why-use-asynctransport)
 - [Details](https://github.com/technicolorenvy/async-transport#details)
 - [Usage Examples](https://github.com/technicolorenvy/async-transport#usage-examples)
+  - [Basic](https://github.com/technicolorenvy/async-transport#basic-examples)
+  - [Serial](https://github.com/technicolorenvy/async-transport#serial-execution-examples)
+  - [Serial w/ data](https://github.com/technicolorenvy/async-transport#data-dependent-serial-execution-examples)
 - [License](https://github.com/technicolorenvy/async-transport#license)
 
 ## Pre-requisites
